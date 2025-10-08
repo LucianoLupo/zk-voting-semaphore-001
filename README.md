@@ -2,6 +2,19 @@
 
 Anonymous and verifiable voting powered by Semaphore zero-knowledge proofs.
 
+**🌐 Network**: Base Sepolia (Layer 2 Testnet)
+**🔗 Chain ID**: 84532
+**📍 Explorer**: https://sepolia.basescan.org
+
+## 📦 Deployed Contracts
+
+| Contract | Address | Explorer |
+|----------|---------|----------|
+| **SemaphoreVoting** | `0xDCf4b632E9AdadC9Cb9aE6611a7Aa0f5daC37D4d` | [View on Basescan](https://sepolia.basescan.org/address/0xDCf4b632E9AdadC9Cb9aE6611a7Aa0f5daC37D4d#code) |
+| **Semaphore** | `0x8A1fd199516489B0Fb7153EB5f075cDAC83c693D` | [View on Basescan](https://sepolia.basescan.org/address/0x8A1fd199516489B0Fb7153EB5f075cDAC83c693D) |
+
+> **Why Base Sepolia?** Base is an Ethereum Layer 2 (L2) built on Optimism's OP Stack, offering significantly lower gas costs (~10-100x cheaper than Ethereum mainnet) while maintaining security through Ethereum. This makes it ideal for ZK voting applications where proof verification can be gas-intensive. Base Sepolia is the testnet for Base.
+
 ## 🚀 Features
 
 - **Complete Anonymity**: Vote without revealing your identity
@@ -14,7 +27,7 @@ Anonymous and verifiable voting powered by Semaphore zero-knowledge proofs.
 
 **Smart Contracts** (Solidity + Hardhat):
 - `SemaphoreVoting.sol` - Main voting contract with Semaphore integration
-- Deployed on Ethereum Sepolia testnet
+- Deployed on **Base Sepolia testnet** (Layer 2)
 
 **Frontend** (Next.js + TypeScript):
 - Modern React with App Router
@@ -27,7 +40,7 @@ Anonymous and verifiable voting powered by Semaphore zero-knowledge proofs.
 - Node.js 18+
 - npm or yarn
 - MetaMask or another Web3 wallet
-- Sepolia testnet ETH (for deployment)
+- Base Sepolia testnet ETH (for deployment) - Get from [Base Sepolia Faucet](https://www.alchemy.com/faucets/base-sepolia)
 
 ## 🛠️ Quick Start
 
@@ -55,23 +68,23 @@ cp .env.example .env
 
 Edit `.env`:
 ```env
-SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_KEY
+BASE_SEPOLIA_RPC_URL=https://base-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_KEY
 DEPLOYER_PRIVATE_KEY=your_private_key_here
 ETHERSCAN_API_KEY=your_etherscan_api_key
-SEMAPHORE_ADDRESS=<semaphore_contract_address>
+SEMAPHORE_ADDRESS=0x8A1fd199516489B0Fb7153EB5f075cDAC83c693D  # Base Sepolia Semaphore
 ```
 
 **Frontend `app/.env.local`**:
 ```bash
-cp app/.env.local.example app/.env.local
+cp app/.env.example app/.env.local
 ```
 
 Edit `app/.env.local`:
 ```env
 NEXT_PUBLIC_VOTING_ADDRESS=<deployed_voting_contract_address>
-NEXT_PUBLIC_SEMAPHORE_ADDRESS=<semaphore_contract_address>
+NEXT_PUBLIC_SEMAPHORE_ADDRESS=0x8A1fd199516489B0Fb7153EB5f075cDAC83c693D  # Base Sepolia
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=<your_walletconnect_id>
-NEXT_PUBLIC_CHAIN_ID=11155111
+NEXT_PUBLIC_CHAIN_ID=84532  # Base Sepolia Chain ID
 ```
 
 ### 3. Compile Smart Contracts
@@ -82,15 +95,15 @@ npm run compile
 
 ### 4. Deploy Contracts
 
-**Option A: Deploy to Sepolia Testnet**
+**Option A: Deploy to Base Sepolia Testnet**
 
-First, get the Semaphore contract address:
-- Sepolia: Check [Semaphore deployments](https://docs.semaphore.pse.dev/deployed-contracts)
+The Semaphore contract is already deployed on Base Sepolia:
+- **Semaphore Address**: `0x8A1fd199516489B0Fb7153EB5f075cDAC83c693D`
+- Check [Semaphore deployments](https://docs.semaphore.pse.dev/deployed-contracts) for other networks
 
-Then deploy:
+Deploy your voting contract:
 ```bash
-export SEMAPHORE_ADDRESS=0x... # Semaphore address
-npm run deploy:sepolia
+npm run deploy:base-sepolia
 ```
 
 **Option B: Local Hardhat Network** (for testing)
@@ -189,11 +202,12 @@ zk-voting-semaphore/
 
 **Root (Hardhat)**:
 ```bash
-npm run compile       # Compile contracts
-npm run test          # Run contract tests
-npm run deploy:sepolia # Deploy to Sepolia
-npm run node          # Start local node
-npm run clean         # Clean artifacts
+npm run compile            # Compile contracts
+npm run test               # Run contract tests
+npm run deploy:base-sepolia # Deploy to Base Sepolia
+npm run deploy:local       # Deploy to local Hardhat node
+npm run node               # Start local node
+npm run clean              # Clean artifacts
 ```
 
 **Frontend (app/)**:
@@ -267,9 +281,16 @@ npm run test:coverage
 
 1. **Deploy Contracts**:
 ```bash
-npm run deploy:sepolia
-npx hardhat verify --network sepolia <VOTING_ADDRESS> <SEMAPHORE_ADDRESS>
+npm run deploy:base-sepolia
+npx hardhat verify --network base-sepolia <VOTING_ADDRESS> 0x8A1fd199516489B0Fb7153EB5f075cDAC83c693D
 ```
+
+Example verification (after deployment):
+```bash
+npx hardhat verify --network base-sepolia 0xDCf4b632E9AdadC9Cb9aE6611a7Aa0f5daC37D4d 0x8A1fd199516489B0Fb7153EB5f075cDAC83c693D
+```
+
+View verified contract on **Basescan**: https://sepolia.basescan.org/address/<VOTING_ADDRESS>#code
 
 2. **Update Frontend ENV**:
 ```env
@@ -293,8 +314,8 @@ Or connect your GitHub repo to Vercel for automatic deployments.
 - Use a lower tree depth for faster generation (fewer max voters)
 
 **"Transaction failed"**
-- Check you're on the correct network (Sepolia)
-- Ensure you have enough ETH for gas
+- Check you're on the correct network (**Base Sepolia** - Chain ID: 84532)
+- Ensure you have enough ETH for gas (get from [Base Sepolia Faucet](https://www.alchemy.com/faucets/base-sepolia))
 - Verify registration/voting phase is active
 
 **"Identity lost"**
@@ -304,7 +325,12 @@ Or connect your GitHub repo to Vercel for automatic deployments.
 
 **"Can't connect wallet"**
 - Ensure MetaMask is installed
-- Switch to Sepolia network
+- Add and switch to **Base Sepolia** network in MetaMask:
+  - Network Name: `Base Sepolia`
+  - RPC URL: `https://sepolia.base.org`
+  - Chain ID: `84532`
+  - Currency Symbol: `ETH`
+  - Block Explorer: `https://sepolia.basescan.org`
 - Check WalletConnect project ID is configured
 
 ## 📄 License
@@ -313,10 +339,21 @@ MIT
 
 ## 🔗 Resources
 
+### Semaphore & ZK Proofs
 - [Semaphore Documentation](https://docs.semaphore.pse.dev/)
+- [Semaphore Deployed Contracts](https://docs.semaphore.pse.dev/deployed-contracts)
+
+### Base Network
+- [Base Documentation](https://docs.base.org/)
+- [Base Sepolia Faucet](https://www.alchemy.com/faucets/base-sepolia)
+- [Base Sepolia Explorer (Basescan)](https://sepolia.basescan.org)
+- [Add Base Sepolia to MetaMask](https://chainlist.org/chain/84532)
+
+### Development Tools
 - [Hardhat Documentation](https://hardhat.org/docs)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [RainbowKit Documentation](https://www.rainbowkit.com/docs)
+- [Wagmi Documentation](https://wagmi.sh/)
 
 ## 🤝 Contributing
 

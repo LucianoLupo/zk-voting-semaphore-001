@@ -3,16 +3,10 @@
 import { useState } from "react";
 import { Identity } from "@semaphore-protocol/identity";
 import { Group } from "@semaphore-protocol/group";
-import { generateProof } from "@semaphore-protocol/proof";
+import { generateProof, SemaphoreProof } from "@semaphore-protocol/proof";
 import toast from "react-hot-toast";
 
-interface ProofData {
-  merkleTreeDepth: number;
-  merkleTreeRoot: string;
-  nullifier: string;
-  message: string;
-  points: readonly string[];
-}
+
 
 export function useSemaphore() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -24,7 +18,7 @@ export function useSemaphore() {
     identity: Identity,
     groupMembers: bigint[],
     treeDepth: number
-  ): Promise<ProofData | null> => {
+  ): Promise<SemaphoreProof | null> => {
     setIsGenerating(true);
     setProgress("Creating Semaphore group...");
 
@@ -53,8 +47,9 @@ export function useSemaphore() {
       return {
         merkleTreeDepth: proof.merkleTreeDepth,
         merkleTreeRoot: proof.merkleTreeRoot,
-        nullifier: proof.nullifier,
         message: proof.message,
+        nullifier: proof.nullifier,
+        scope: proof.scope,
         points: proof.points,
       };
     } catch (error: any) {

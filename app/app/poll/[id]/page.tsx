@@ -127,10 +127,7 @@ export default function PollPage() {
       await submitVote(
         pollId,
         selectedOption,
-        proof.merkleTreeDepth,
-        BigInt(proof.merkleTreeRoot),
-        BigInt(proof.nullifier),
-        proof.points.map(p => BigInt(p))
+        proof
       );
 
       toast.dismiss();

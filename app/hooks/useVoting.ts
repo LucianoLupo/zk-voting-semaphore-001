@@ -4,6 +4,7 @@ import { useWriteContract, useReadContract, useWaitForTransactionReceipt } from 
 import { VOTING_ADDRESS, VOTING_ABI } from "@/lib/contracts";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { SemaphoreProof } from "@semaphore-protocol/proof";
 
 export function useVoting() {
   const { writeContractAsync, data: hash, isPending } = useWriteContract();
@@ -48,10 +49,7 @@ export function useVoting() {
   const submitVote = async (
     pollId: number,
     voteOption: number,
-    merkleTreeDepth: number,
-    merkleTreeRoot: bigint,
-    nullifier: bigint,
-    points: readonly bigint[]
+    proof: SemaphoreProof
   ) => {
     try {
       const txHash = await writeContractAsync({
@@ -61,10 +59,7 @@ export function useVoting() {
         args: [
           BigInt(pollId),
           BigInt(voteOption),
-          BigInt(merkleTreeDepth),
-          merkleTreeRoot,
-          nullifier,
-          points as readonly [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint],
+          proof,
         ],
       });
       return txHash;

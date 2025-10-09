@@ -39,6 +39,7 @@
     "@nomicfoundation/hardhat-network-helpers": "^1.1.0",
     "@openzeppelin/contracts": "^5.4.0",
     "@semaphore-protocol/contracts": "^4.13.1",
+    "@semaphore-protocol/core": "^4.13.1",
     "chai": "^6.2.0",
     "dotenv": "^17.2.3",
     "ethers": "^6.15.0",

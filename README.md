@@ -133,8 +133,8 @@ Visit: http://localhost:3000
 2. **Create Poll**:
    - Click "Create New Poll"
    - Enter poll title and options (2-10)
-   - Set registration duration (hours for voter registration)
-   - Set voting duration (hours for actual voting)
+   - Set registration duration (in **minutes** - how long voters have to register)
+   - Set voting duration (in **minutes** - how long registered voters can vote)
    - Choose max voters (tree depth)
    - Click "Create Poll"
 

@@ -8,8 +8,8 @@ import toast from "react-hot-toast";
 import {
   TREE_DEPTH_OPTIONS,
   DEFAULT_TREE_DEPTH,
-  DEFAULT_REGISTRATION_HOURS,
-  DEFAULT_VOTING_HOURS,
+  DEFAULT_REGISTRATION_MINUTES,
+  DEFAULT_VOTING_MINUTES,
   MIN_POLL_OPTIONS,
   MAX_POLL_OPTIONS,
 } from "@/lib/constants";
@@ -21,8 +21,8 @@ export default function CreatePollPage() {
 
   const [title, setTitle] = useState("");
   const [options, setOptions] = useState(["", ""]);
-  const [registrationHours, setRegistrationHours] = useState(DEFAULT_REGISTRATION_HOURS);
-  const [votingHours, setVotingHours] = useState(DEFAULT_VOTING_HOURS);
+  const [registrationMinutes, setRegistrationMinutes] = useState(DEFAULT_REGISTRATION_MINUTES);
+  const [votingMinutes, setVotingMinutes] = useState(DEFAULT_VOTING_MINUTES);
   const [treeDepth, setTreeDepth] = useState(DEFAULT_TREE_DEPTH);
 
   const addOption = () => {
@@ -67,8 +67,8 @@ export default function CreatePollPage() {
     }
 
     try {
-      const registrationDuration = registrationHours * 3600;
-      const votingDuration = votingHours * 3600;
+      const registrationDuration = registrationMinutes * 60;
+      const votingDuration = votingMinutes * 60;
 
       toast.loading("Creating poll...");
 
@@ -168,35 +168,35 @@ export default function CreatePollPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Registration Duration (hours)
+              Registration Duration (minutes)
             </label>
             <input
               type="number"
-              value={registrationHours}
-              onChange={(e) => setRegistrationHours(Number(e.target.value))}
+              value={registrationMinutes}
+              onChange={(e) => setRegistrationMinutes(Number(e.target.value))}
               min={1}
-              max={720}
+              max={43200}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-gray-900"
             />
             <p className="mt-1 text-sm text-gray-500">
-              Time for voters to register
+              Time for voters to register (1 min - 30 days)
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Voting Duration (hours)
+              Voting Duration (minutes)
             </label>
             <input
               type="number"
-              value={votingHours}
-              onChange={(e) => setVotingHours(Number(e.target.value))}
+              value={votingMinutes}
+              onChange={(e) => setVotingMinutes(Number(e.target.value))}
               min={1}
-              max={720}
+              max={43200}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-gray-900"
             />
             <p className="mt-1 text-sm text-gray-500">
-              Time for registered voters to vote
+              Time for registered voters to vote (1 min - 30 days)
             </p>
           </div>
         </div>

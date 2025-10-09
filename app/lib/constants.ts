@@ -6,8 +6,8 @@ export const TREE_DEPTH_OPTIONS = [
 ] as const;
 
 export const DEFAULT_TREE_DEPTH = 20;
-export const DEFAULT_REGISTRATION_HOURS = 24;
-export const DEFAULT_VOTING_HOURS = 48;
+export const DEFAULT_REGISTRATION_MINUTES = 10; // 10 minutes for testing (was 24 hours)
+export const DEFAULT_VOTING_MINUTES = 20; // 20 minutes for testing (was 48 hours)
 
 export const MIN_POLL_OPTIONS = 2;
 export const MAX_POLL_OPTIONS = 10;

@@ -6,6 +6,16 @@ pragma solidity ^0.8.23;
  * @dev Interface for Semaphore protocol contract
  */
 interface ISemaphore {
+
+    /// It defines all the Semaphore proof parameters used by Semaphore.sol.
+    struct SemaphoreProof {
+        uint256 merkleTreeDepth;
+        uint256 merkleTreeRoot;
+        uint256 nullifier;
+        uint256 message;
+        uint256 scope;
+        uint256[8] points;
+    }
     /**
      * @dev Creates a new Semaphore group with admin
      * @param admin The admin address for the group
@@ -41,25 +51,12 @@ interface ISemaphore {
         uint256[] calldata proofSiblings
     ) external;
 
-    /**
-     * @dev Validates a zero-knowledge proof
-     * @param groupId: The group identifier
-     * @param merkleTreeDepth: The depth of the Merkle tree
-     * @param merkleTreeRoot: The Merkle tree root
-     * @param nullifier: The unique nullifier for this proof
-     * @param externalNullifier: The external nullifier (scope)
-     * @param signal: The signal/message being proven
-     * @param points: The zk-SNARK proof points
-     */
-    function validateProof(
-        uint256 groupId,
-        uint256 merkleTreeDepth,
-        uint256 merkleTreeRoot,
-        uint256 nullifier,
-        uint256 externalNullifier,
-        uint256 signal,
-        uint256[8] calldata points
-    ) external view;
+    /// @dev Saves the nullifier hash to prevent double signaling and emits an event
+    /// if the zero-knowledge proof is valid.
+    /// @param groupId: Id of the group.
+    /// @param proof: Semaphore zero-knowledge proof.
+    function validateProof(uint256 groupId, SemaphoreProof calldata proof) external;
+
 
     /**
      * @dev Gets the Merkle tree root for a group

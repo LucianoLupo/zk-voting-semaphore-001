@@ -2,6 +2,7 @@
 pragma solidity ^0.8.23;
 
 import "./interfaces/ISemaphore.sol";
+import "hardhat/console.sol";
 
 /**
  * @title SemaphoreVoting
@@ -26,6 +27,7 @@ contract SemaphoreVoting {
         bool exists;
     }
 
+
     // State variables
     uint256 public pollCount;
     mapping(uint256 => Poll) public polls;
@@ -42,10 +44,7 @@ contract SemaphoreVoting {
         uint256 groupId
     );
 
-    event VoterRegistered(
-        uint256 indexed pollId,
-        uint256 identityCommitment
-    );
+    event VoterRegistered(uint256 indexed pollId, uint256 identityCommitment);
 
     event VoteCast(
         uint256 indexed pollId,
@@ -114,8 +113,10 @@ contract SemaphoreVoting {
         uint256 votingDuration,
         uint256 merkleTreeDepth
     ) external returns (uint256) {
-        if (options.length < 2 || options.length > 10) revert InvalidOptionCount();
-        if (merkleTreeDepth < 1 || merkleTreeDepth > 32) revert InvalidTreeDepth();
+        if (options.length < 2 || options.length > 10)
+            revert InvalidOptionCount();
+        if (merkleTreeDepth < 1 || merkleTreeDepth > 32)
+            revert InvalidTreeDepth();
 
         uint256 pollId = pollCount++;
         uint256 startTime = block.timestamp;
@@ -163,48 +164,28 @@ contract SemaphoreVoting {
         emit VoterRegistered(pollId, identityCommitment);
     }
 
-    /**
-     * @dev Cast a vote using a zero-knowledge proof
-     * @param pollId: The poll identifier
-     * @param voteOption: The index of the option being voted for
-     * @param merkleTreeDepth: The depth of the Merkle tree
-     * @param merkleTreeRoot: The root of the Merkle tree
-     * @param nullifier: The unique nullifier for this vote
-     * @param points: The zk-SNARK proof points [8]
-     */
+
     function vote(
         uint256 pollId,
         uint256 voteOption,
-        uint256 merkleTreeDepth,
-        uint256 merkleTreeRoot,
-        uint256 nullifier,
-        uint256[8] calldata points
+        ISemaphore.SemaphoreProof calldata proofs
     ) external pollExists(pollId) duringVoting(pollId) {
         Poll storage poll = polls[pollId];
-
         // Validate vote option
         if (voteOption >= poll.options.length) revert InvalidVoteOption();
-
         // Check nullifier hasn't been used
-        if (usedNullifiers[pollId][nullifier]) revert VoteAlreadyCast();
-
+        if (usedNullifiers[pollId][proofs.nullifier]) revert VoteAlreadyCast();
         // Verify ZK proof through Semaphore
         semaphore.validateProof(
             poll.groupId,
-            merkleTreeDepth,
-            merkleTreeRoot,
-            nullifier,
-            pollId, // externalNullifier (scope)
-            voteOption, // signal (the vote)
-            points
+            proofs
         );
-
         // Record vote
         votes[pollId][voteOption]++;
-        usedNullifiers[pollId][nullifier] = true;
+        usedNullifiers[pollId][proofs.nullifier] = true;
         poll.totalVotes++;
 
-        emit VoteCast(pollId, voteOption, nullifier);
+        emit VoteCast(pollId, voteOption, proofs.nullifier);
     }
 
     /**
@@ -212,12 +193,9 @@ contract SemaphoreVoting {
      * @param pollId: The poll identifier
      * @return results: Array of vote counts for each option
      */
-    function getResults(uint256 pollId)
-        external
-        view
-        pollExists(pollId)
-        returns (uint256[] memory)
-    {
+    function getResults(
+        uint256 pollId
+    ) external view pollExists(pollId) returns (uint256[] memory) {
         Poll storage poll = polls[pollId];
         uint256[] memory results = new uint256[](poll.options.length);
 
@@ -239,7 +217,9 @@ contract SemaphoreVoting {
      * @return admin Address of poll creator
      * @return totalVotes Total number of votes cast
      */
-    function getPollInfo(uint256 pollId)
+    function getPollInfo(
+        uint256 pollId
+    )
         external
         view
         pollExists(pollId)
@@ -270,12 +250,9 @@ contract SemaphoreVoting {
      * @param pollId: The poll identifier
      * @return phase: "Registration", "Voting", or "Ended"
      */
-    function getPollPhase(uint256 pollId)
-        external
-        view
-        pollExists(pollId)
-        returns (string memory)
-    {
+    function getPollPhase(
+        uint256 pollId
+    ) external view pollExists(pollId) returns (string memory) {
         Poll storage poll = polls[pollId];
 
         if (block.timestamp < poll.registrationEndTime) {
@@ -292,12 +269,9 @@ contract SemaphoreVoting {
      * @param pollId: The poll identifier
      * @return The current Merkle tree root
      */
-    function getMerkleTreeRoot(uint256 pollId)
-        external
-        view
-        pollExists(pollId)
-        returns (uint256)
-    {
+    function getMerkleTreeRoot(
+        uint256 pollId
+    ) external view pollExists(pollId) returns (uint256) {
         return semaphore.getMerkleTreeRoot(polls[pollId].groupId);
     }
 
@@ -306,12 +280,9 @@ contract SemaphoreVoting {
      * @param pollId: The poll identifier
      * @return The number of registered voters
      */
-    function getRegisteredVoterCount(uint256 pollId)
-        external
-        view
-        pollExists(pollId)
-        returns (uint256)
-    {
+    function getRegisteredVoterCount(
+        uint256 pollId
+    ) external view pollExists(pollId) returns (uint256) {
         return semaphore.getNumberOfMerkleTreeLeaves(polls[pollId].groupId);
     }
 
@@ -321,12 +292,10 @@ contract SemaphoreVoting {
      * @param nullifier: The nullifier to check
      * @return True if the nullifier has been used, false otherwise
      */
-    function isNullifierUsed(uint256 pollId, uint256 nullifier)
-        external
-        view
-        pollExists(pollId)
-        returns (bool)
-    {
+    function isNullifierUsed(
+        uint256 pollId,
+        uint256 nullifier
+    ) external view pollExists(pollId) returns (bool) {
         return usedNullifiers[pollId][nullifier];
     }
 }
